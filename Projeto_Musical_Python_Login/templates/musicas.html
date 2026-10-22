@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="heading">
+  <h1>Músicas</h1>
+  {% if usuario.papel == 'admin' %}<a class="btn" href="{{ url_for('novo', nome='musicas') }}">+ Novo registro</a>{% endif %}
+</div>
+
+<form class="panel filtros" method="get">
+  <label>Título contém
+    <input name="titulo" value="{{ filtros.titulo }}" placeholder="ex.: rhapsody">
+  </label>
+  <label>Gênero
+    <select name="idGenero">
+      <option value="">Todos</option>
+      {% for g in generos %}<option value="{{ g.idGenero }}" {% if filtros.idGenero == g.idGenero %}selected{% endif %}>{{ g.nome }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Álbum
+    <select name="idAlbum">
+      <option value="">Todos</option>
+      {% for a in albuns %}<option value="{{ a.idAlbum }}" {% if filtros.idAlbum == a.idAlbum %}selected{% endif %}>{{ a.nome }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Cantor
+    <select name="idCantor">
+      <option value="">Todos</option>
+      {% for c in cantores %}<option value="{{ c.idCantor }}" {% if filtros.idCantor == c.idCantor %}selected{% endif %}>{{ c.nome }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Lançada a partir de (ano)
+    <input type="number" name="ano_inicio" min="1000" max="9999" value="{{ filtros.ano_inicio or '' }}">
+  </label>
+  <label>Lançada até (ano)
+    <input type="number" name="ano_fim" min="1000" max="9999" value="{{ filtros.ano_fim or '' }}">
+  </label>
+  <div class="filtros-acoes">
+    <button>Filtrar</button>
+    <a class="btn secondary" href="{{ url_for('listar', nome='musicas') }}">Limpar</a>
+  </div>
+</form>
+
+<p class="muted">{{ musicas|length }} música(s) encontrada(s).</p>
+<div class="panel overflow">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Título</th><th>Duração</th><th>Lançamento</th><th>Álbum</th><th>Gênero</th><th>Cantores</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      {% for m in musicas %}
+      <tr>
+        <td>{{ m.idMusica }}</td>
+        <td>{{ m.titulo }}</td>
+        <td>{{ m.duracao }}</td>
+        <td>{{ m.dataLancamento }}</td>
+        <td>{{ m.album_nome }}</td>
+        <td>{{ m.genero_nome }}</td>
+        <td>{{ m.cantores_nomes or '—' }}</td>
+        <td class="actions">
+          <a href="{{ url_for('detalhes', nome='musicas', identificador=m.idMusica) }}">Ver</a>
+          {% if usuario.papel == 'admin' %}
+          <a href="{{ url_for('editar', nome='musicas', identificador=m.idMusica) }}">Editar</a>
+          <form method="post" action="{{ url_for('excluir', nome='musicas', identificador=m.idMusica) }}" onsubmit="return confirm('Excluir este registro?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="danger">Excluir</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8">Nenhuma música encontrada com esses filtros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Sistema Musical</title>
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+    </head>
+    <body>
+    <header>
+        <div class="container top">
+            <a class="brand" href="{{ url_for('inicio') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                    alt="Logo IFmusic">
+            </a>
+            <nav>
+                {% if usuario %}
+                    {% for slug, titulo in rotulos.items() %}
+                        <a href="{{ url_for('listar',nome=slug) }}">{{ titulo }}</a>
+                    {% endfor %}
+                        <span class="papel">{{ usuario.nome }} · {{ usuario.papel }}</span>
+                        <form method="post" action="{{ url_for('sair') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button class="subtle">Sair</button>
+                        </form>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Entrar</a>
+                    <a href="{{ url_for('cadastro') }}">Cadastrar conta</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% for categoria,mensagem in get_flashed_messages(with_categories=true) %}
+            <div class="alert {{ categoria }}">{{ mensagem }}</div>
+        {% endfor %}
+        {% block conteudo %}
+        {% endblock %}
+    </main>
+</body>
+</html>

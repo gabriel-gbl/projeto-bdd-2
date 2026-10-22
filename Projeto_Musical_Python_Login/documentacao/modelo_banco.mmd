@@ -1,0 +1,13 @@
+erDiagram
+    CANTOR ||--o| PERFIL_CANTOR : possui
+    CANTOR ||--o{ CANTOR_MUSICA : canta
+    MUSICA ||--o{ CANTOR_MUSICA : inclui
+    ALBUM ||--o{ MUSICA : contem
+    GENERO ||--o{ MUSICA : classifica
+    CANTOR { int idCantor PK string nome string dataNascimento string nacionalidade }
+    PERFIL_CANTOR { int idPerfil PK int idCantor FK,UK string biografia string instagram string foto }
+    ALBUM { int idAlbum PK string nome int anoLancamento string gravadora }
+    GENERO { int idGenero PK string nome string descricao }
+    MUSICA { int idMusica PK string titulo string duracao string dataLancamento int idAlbum FK int idGenero FK }
+    CANTOR_MUSICA { int idCantor PK,FK int idMusica PK,FK }
+    USUARIO { int idUsuario PK string nome string email UK string senha_hash string papel }

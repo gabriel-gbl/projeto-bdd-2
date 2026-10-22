@@ -1,0 +1,94 @@
+---
+config:
+  layout: elk
+  markdownAutoWrap: false
+---
+classDiagram
+    direction TB
+
+    class ModeloBase {
+        +tabela$
+        +chave$
+        +campos$
+        +listar()$
+        +buscar(identificador)$
+        +cadastrar(dados)$
+        +atualizar()
+        +excluir()
+    }
+
+    class Cantor {
+        +idCantor
+        +nome
+        +dataNascimento
+        +nacionalidade
+        +/tem_perfil
+        +/total_musicas
+        +/generos_nomes
+        +musicas()
+        +perfil()
+        +pesquisar(nome, nacionalidade, idGenero, minimo_musicas, somente_com_perfil)$
+    }
+
+    class PerfilCantor {
+        +idPerfil
+        +idCantor
+        +biografia
+        +instagram
+        +foto
+    }
+
+    class Album {
+        +idAlbum
+        +nome
+        +anoLancamento
+        +gravadora
+    }
+
+    class Genero {
+        +idGenero
+        +nome
+        +descricao
+    }
+
+    class Musica {
+        +idMusica
+        +titulo
+        +duracao
+        +dataLancamento
+        +idAlbum
+        +idGenero
+        +/album_nome
+        +/genero_nome
+        +/cantores_nomes
+        +cantores()
+        +album()
+        +genero()
+        +associar_cantor(id_cantor)
+        +remover_cantor(id_cantor)
+        +pesquisar(titulo, idGenero, idAlbum, idCantor, ano_inicio, ano_fim)$
+    }
+
+
+    ModeloBase <|-- Cantor
+    ModeloBase <|-- PerfilCantor
+    ModeloBase <|-- Album
+    ModeloBase <|-- Genero
+    ModeloBase <|-- Musica
+    Cantor "1" -- "0..1" PerfilCantor : possui
+    Cantor "0..*" -- "0..*" Musica : canta
+    Album "1" -- "0..*" Musica : contem
+    Genero "1" -- "0..*" Musica : classifica
+
+    class Usuario {
+        +idUsuario
+        +nome
+        +email
+        +papel
+        -_senha_hash
+        +buscar(identificador)$
+        +buscar_email(email)$
+        +cadastrar(nome, email, senha)$
+        +criar_admin(nome, email, senha)$
+        +verificar_senha(senha)
+    }

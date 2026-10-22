@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="heading">
+  <h1>Cantores</h1>
+  {% if usuario.papel == 'admin' %}<a class="btn" href="{{ url_for('novo', nome='cantores') }}">+ Novo registro</a>{% endif %}
+</div>
+
+<form class="panel filtros" method="get">
+  <label>Nome contém
+    <input name="nome" value="{{ filtros.nome }}" placeholder="ex.: elis">
+  </label>
+  <label>Nacionalidade contém
+    <input name="nacionalidade" value="{{ filtros.nacionalidade }}" placeholder="ex.: brasileira">
+  </label>
+  <label>Canta o gênero
+    <select name="idGenero">
+      <option value="">Qualquer</option>
+      {% for g in generos %}<option value="{{ g.idGenero }}" {% if filtros.idGenero == g.idGenero %}selected{% endif %}>{{ g.nome }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Mínimo de músicas
+    <input type="number" name="minimo_musicas" min="0" value="{{ filtros.minimo_musicas or '' }}">
+  </label>
+  <label class="check">
+    <input type="checkbox" name="somente_com_perfil" value="1" {% if filtros.somente_com_perfil %}checked{% endif %}>
+    Somente com perfil
+  </label>
+  <div class="filtros-acoes">
+    <button>Filtrar</button>
+    <a class="btn secondary" href="{{ url_for('listar', nome='cantores') }}">Limpar</a>
+  </div>
+</form>
+
+<p class="muted">{{ cantores|length }} cantor(es) encontrado(s).</p>
+<div class="panel overflow">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Nome</th><th>Nascimento</th><th>Nacionalidade</th><th>Perfil</th><th>Músicas</th><th>Gêneros</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      {% for c in cantores %}
+      <tr>
+        <td>{{ c.idCantor }}</td>
+        <td>{{ c.nome }}</td>
+        <td>{{ c.dataNascimento }}</td>
+        <td>{{ c.nacionalidade }}</td>
+        <td>{{ 'Sim' if c.tem_perfil else 'Não' }}</td>
+        <td>{{ c.total_musicas }}</td>
+        <td>{{ c.generos_nomes or '—' }}</td>
+        <td class="actions">
+          <a href="{{ url_for('detalhes', nome='cantores', identificador=c.idCantor) }}">Ver</a>
+          {% if usuario.papel == 'admin' %}
+          <a href="{{ url_for('editar', nome='cantores', identificador=c.idCantor) }}">Editar</a>
+          <form method="post" action="{{ url_for('excluir', nome='cantores', identificador=c.idCantor) }}" onsubmit="return confirm('Excluir este registro?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="danger">Excluir</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8">Nenhum cantor encontrado com esses filtros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
